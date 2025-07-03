@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Memória Emocional</title>
+    <title>NeuroSer: Jogo da Memória das Emoções</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,25 +26,15 @@
             transition: background-color 0.8s ease;
         }
 
-        @keyframes breath-effect {
-            0%, 100% { background-color: var(--lilas-nevoa); }
-            50% { background-color: var(--azul-sereno); }
-        }
-        .miss-feedback {
-            animation: breath-effect 1.5s ease-in-out;
-        }
+        h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; }
 
-        h1, h2, h3, h4 {
-            font-family: 'Nunito', sans-serif;
-        }
-
+        /* Estilos do Jogo da Memória */
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             perspective: 1000px;
         }
-
         .card {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -53,17 +43,12 @@
             transition: transform 0.6s, box-shadow 0.3s;
             cursor: pointer;
         }
-
-        .card.is-flipped {
-            transform: rotateY(180deg);
-        }
-        
+        .card.is-flipped { transform: rotateY(180deg); }
         .card.is-matched {
             box-shadow: 0 0 20px 5px var(--rosa-cha);
             transform: rotateY(180deg) scale(1.05);
             cursor: default;
         }
-
         .card-face {
             position: absolute;
             width: 100%;
@@ -77,12 +62,9 @@
             border-radius: 1.5rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-
         .card-front {
-            background-color: var(--cinza-leve);
-            border: 3px solid var(--lilas-nevoa);
+            background: linear-gradient(135deg, var(--roxo-lavanda), #9e82c1);
         }
-
         .card-back {
             background-color: white;
             color: var(--texto-escuro);
@@ -92,6 +74,7 @@
             border: 3px solid var(--roxo-lavanda);
         }
 
+        /* Modal Genérico */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -127,43 +110,37 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <!-- Tela de Seleção de Idade -->
-    <div id="age-gate" class="w-full max-w-md mx-auto text-center">
-        <h1 class="text-3xl md:text-4xl font-bold" style="color: var(--texto-escuro);">Memória das Emoções</h1>
-        <p class="mt-4 text-lg" style="color: var(--texto-escuro);">Para começar, conte-nos em que fase da vida você está.</p>
+    <!-- =============================================== -->
+    <!-- TELAS DO APP (Geridas por JavaScript)           -->
+    <!-- =============================================== -->
+
+    <!-- Tela 1: Seleção de Idade (Inicial) -->
+    <div id="screen-age-gate" class="app-screen w-full max-w-md mx-auto text-center">
+        <h1 class="text-3xl md:text-4xl font-bold" style="color: var(--texto-escuro);">Jogo da Memória das Emoções</h1>
+        <p class="mt-4 text-lg" style="color: var(--texto-escuro);">Para começar, em que fase da vida você está?</p>
         <div class="mt-8 space-y-4">
-            <button data-age="child" class="age-select-button w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--roxo-lavanda);">
-                Criança (7-11 anos)
-            </button>
-            <button data-age="teen" class="age-select-button w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--azul-sereno);">
-                Adolescente (12-17 anos)
-            </button>
-            <button data-age="adult" class="age-select-button w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--verde-agua); color: var(--texto-escuro);">
-                Adulto (18+)
-            </button>
+            <button data-age="child" class="age-select-button w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--roxo-lavanda);">Criança (7-11 anos)</button>
+            <button data-age="teen" class="age-select-button w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--azul-sereno);">Adolescente (12-17 anos)</button>
+            <button data-age="adult" class="age-select-button w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--verde-agua); color: var(--texto-escuro);">Adulto (18+)</button>
         </div>
     </div>
 
-    <!-- Tela Principal do Jogo (inicialmente oculta) -->
-    <div id="game-container" class="w-full max-w-2xl mx-auto hidden">
+    <!-- Tela 2: Jogo da Memória Emocional -->
+    <div id="screen-game-memory" class="app-screen hidden w-full max-w-2xl mx-auto">
         <header class="text-center mb-4">
             <h1 class="text-3xl md:text-4xl font-bold" style="color: var(--texto-escuro);">Memória das Emoções</h1>
             <p id="level-display" class="text-xl font-bold mt-2" style="color: var(--roxo-lavanda);">Nível 1</p>
         </header>
-
-        <div id="game-board" class="game-board mb-6">
-            <!-- As cartas serão geradas pelo JavaScript -->
-        </div>
-
+        <div id="game-board" class="game-board mb-6"></div>
         <div class="flex justify-center gap-4">
-            <button id="change-age-button" class="bg-slate-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-slate-600 transition-transform transform hover:scale-105">
-                Trocar Idade
-            </button>
-            <button id="restart-button" class="text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:opacity-90 transition-transform transform hover:scale-105" style="background-color: var(--roxo-lavanda);">
-                Reiniciar Nível
-            </button>
+            <button id="change-age-button" class="bg-slate-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-slate-600 transition">Trocar Faixa Etária</button>
+            <button id="restart-level-button" class="text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:opacity-90" style="background-color: var(--roxo-lavanda);">Reiniciar Nível</button>
         </div>
     </div>
+
+    <!-- =============================================== -->
+    <!-- MODAIS (Janelas Pop-up)                         -->
+    <!-- =============================================== -->
 
     <!-- Modal de Fim de Nível / História -->
     <div id="story-modal" class="modal-overlay">
@@ -186,24 +163,45 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Elementos da UI ---
-        const ageGate = document.getElementById('age-gate');
-        const gameContainer = document.getElementById('game-container');
-        const ageSelectButtons = document.querySelectorAll('.age-select-button');
-        const changeAgeButton = document.getElementById('change-age-button');
-        const gameBoard = document.getElementById('game-board');
-        const restartButton = document.getElementById('restart-button');
-        const levelDisplay = document.getElementById('level-display');
+        // --- Gerenciamento de Telas ---
+        const screens = document.querySelectorAll('.app-screen');
         const bodyEl = document.querySelector('body');
-        const modal = document.getElementById('story-modal');
-        const modalActionButton = document.getElementById('modal-action-button');
-        const modalTitle = document.getElementById('modal-title');
-        const modalStoryTitle = document.getElementById('modal-story-title');
-        const modalStoryContent = document.getElementById('modal-story-content');
-        const modalReflectionContent = document.getElementById('modal-reflection-content');
-        const modalCompletionMessage = document.getElementById('modal-completion-message');
+        function showScreen(screenId) {
+            screens.forEach(screen => screen.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+        }
 
-        // --- Banco de Narrativas por Idade ---
+        // --- Estado Global do App ---
+        let currentUserAgeGroup = null;
+
+        // --- Navegação Principal ---
+        const ageSelectButtons = document.querySelectorAll('.age-select-button');
+        ageSelectButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                currentUserAgeGroup = button.dataset.age;
+                showScreen('screen-game-memory');
+                startGameOfMemory(0); // Inicia o jogo da memória no nível 1
+            });
+        });
+
+        document.getElementById('change-age-button').addEventListener('click', () => {
+            showScreen('screen-age-gate');
+        });
+
+        // ==========================================================
+        // LÓGICA DO JOGO DA MEMÓRIA
+        // ==========================================================
+        const gameBoard = document.getElementById('game-board');
+        const restartLevelButton = document.getElementById('restart-level-button');
+        const levelDisplay = document.getElementById('level-display');
+        const storyModal = document.getElementById('story-modal');
+        const modalActionButton = storyModal.querySelector('#modal-action-button');
+        const modalTitle = storyModal.querySelector('#modal-title');
+        const modalStoryTitle = storyModal.querySelector('#modal-story-title');
+        const modalStoryContent = storyModal.querySelector('#modal-story-content');
+        const modalReflectionContent = storyModal.querySelector('#modal-reflection-content');
+        const modalCompletionMessage = storyModal.querySelector('#modal-completion-message');
+
         const narrativesByAge = {
             child: [
                 { title: "Um Dia na Escola", pairs: [{ id: 1, emotion: 'Alegria', situation: 'ao brincar com amigos no recreio' }, { id: 2, emotion: 'Tristeza', situation: 'por não entender a lição de casa' }, { id: 3, emotion: 'Raiva', situation: 'quando um colega estragou seu desenho' }, { id: 4, emotion: 'Medo', situation: 'de apresentar um trabalho na frente da turma' }], narrative: (p) => `Na escola hoje, senti <strong>${p[0].emotion}</strong> ${p[0].situation}. Mas depois, fiquei com <strong>${p[1].emotion}</strong> ${p[1].situation}. Senti muita <strong>${p[2].emotion}</strong> ${p[2].situation}. O maior <strong>${p[3].emotion}</strong> foi na hora ${p[3].situation}.` },
@@ -228,34 +226,19 @@
             ]
         };
 
-        // --- Estado do Jogo ---
-        let activeNarratives = [];
-        let currentLevel = 0;
+        let currentMemoryLevel = 0;
         let flippedCards = [];
         let lockBoard = false;
         let matchedPairs = 0;
 
-        // --- Funções Principais ---
-
-        function selectAgeGroup(ageGroup) {
-            activeNarratives = narrativesByAge[ageGroup];
-            ageGate.classList.add('hidden');
-            gameContainer.classList.remove('hidden');
-            startGame(0);
-        }
-
-        function returnToAgeGate() {
-            gameContainer.classList.add('hidden');
-            ageGate.classList.remove('hidden');
-        }
-
-        function startGame(level) {
-            currentLevel = level;
+        function startGameOfMemory(level) {
+            currentMemoryLevel = level;
             matchedPairs = 0;
-            levelDisplay.textContent = `Nível ${currentLevel + 1}`;
+            levelDisplay.textContent = `Nível ${currentMemoryLevel + 1}`;
             gameBoard.innerHTML = '';
             
-            const currentLevelData = activeNarratives[currentLevel];
+            const activeNarratives = narrativesByAge[currentUserAgeGroup];
+            const currentLevelData = activeNarratives[currentMemoryLevel];
             let cardDataSet = [];
             currentLevelData.pairs.forEach(pair => {
                 cardDataSet.push({ type: 'emotion', text: pair.emotion, id: pair.id });
@@ -270,7 +253,7 @@
                 cardElement.classList.add('card');
                 cardElement.dataset.id = cardData.id;
                 
-                const frontIcon = `<div class="card-face card-front"><svg class="w-12 h-12" style="color: var(--roxo-lavanda);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 5.523-4.477 10-10 10S1 17.523 1 12 5.477 2 11 2s10 4.477 10 10z"></path></svg></div>`;
+                const frontIcon = `<div class="card-face card-front"></div>`;
                 const backContent = `<div class="card-face card-back">${cardData.text}</div>`;
                 
                 cardElement.innerHTML = frontIcon + backContent;
@@ -308,18 +291,17 @@
             resetBoardState();
             
             setTimeout(() => {
-                if (matchedPairs === activeNarratives[currentLevel].pairs.length) {
+                const activeNarratives = narrativesByAge[currentUserAgeGroup];
+                if (matchedPairs === activeNarratives[currentMemoryLevel].pairs.length) {
                     showStoryModal();
                 }
             }, 600);
         }
 
         function handleMismatch() {
-            bodyEl.classList.add('miss-feedback');
             setTimeout(() => {
                 flippedCards.forEach(card => card.classList.remove('is-flipped'));
                 resetBoardState();
-                bodyEl.classList.remove('miss-feedback');
             }, 1500);
         }
 
@@ -328,47 +310,43 @@
         }
 
         function showStoryModal() {
-            const levelData = activeNarratives[currentLevel];
+            const activeNarratives = narrativesByAge[currentUserAgeGroup];
+            const levelData = activeNarratives[currentMemoryLevel];
             
             modalReflectionContent.classList.remove('hidden');
             modalCompletionMessage.classList.add('hidden');
             modalStoryContent.classList.remove('hidden');
             
-            modalTitle.textContent = `Nível ${currentLevel + 1} Concluído!`;
+            modalTitle.textContent = `Nível ${currentMemoryLevel + 1} Concluído!`;
             modalStoryTitle.textContent = levelData.title;
             const orderedPairs = [...levelData.pairs].sort((a, b) => a.id - b.id);
             modalStoryContent.innerHTML = levelData.narrative(orderedPairs);
             modalActionButton.textContent = "Próximo Nível";
             
             modalActionButton.onclick = () => {
-                modal.classList.remove('visible');
-                startGame(currentLevel + 1);
+                storyModal.classList.remove('visible');
+                startGameOfMemory(currentMemoryLevel + 1);
             };
 
-            if (currentLevel >= activeNarratives.length - 1) {
+            if (currentMemoryLevel >= activeNarratives.length - 1) {
                 modalTitle.textContent = "Jornada Concluída!";
-                modalCompletionMessage.textContent = 'Você completou todos os níveis e explorou muitas emoções. Continue a praticar a sua inteligência emocional!';
+                modalCompletionMessage.textContent = 'Você completou todos os níveis deste jogo. Bom trabalho!';
                 modalReflectionContent.classList.add('hidden');
                 modalCompletionMessage.classList.remove('hidden');
-                modalActionButton.textContent = 'Jogar Novamente';
+                modalActionButton.textContent = 'Trocar Faixa Etária';
                 modalActionButton.onclick = () => {
-                    modal.classList.remove('visible');
-                    startGame(0);
+                    storyModal.classList.remove('visible');
+                    showScreen('screen-age-gate');
                 };
             }
             
-            modal.classList.add('visible');
+            storyModal.classList.add('visible');
         }
 
-        // --- Event Listeners ---
-        ageSelectButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                selectAgeGroup(button.dataset.age);
-            });
-        });
-
-        changeAgeButton.addEventListener('click', returnToAgeGate);
-        restartButton.addEventListener('click', () => startGame(currentLevel));
+        restartLevelButton.addEventListener('click', () => startGameOfMemory(currentMemoryLevel));
+        
+        // Inicia na tela de seleção de idade
+        showScreen('screen-age-gate');
     });
     </script>
 </body>
